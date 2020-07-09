@@ -11,7 +11,7 @@ module Rubiclifier
       args[0]
     end
 
-    def subcommand
+    def first_option
       args[1]
     end
 

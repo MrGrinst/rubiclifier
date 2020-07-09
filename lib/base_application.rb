@@ -10,12 +10,12 @@ module Rubiclifier
 
     def initialize(args)
       @args = Args.new(args)
-      DB.hydrate(data_directory, migrations_location)
+      DB.hydrate(data_directory, migrations_location) if feature_enabled?(Feature::DATABASE)
     end
 
     def call
       show_help if args.command == "help" || args.boolean("help", "h")
-      setup_or_fail
+      setup_or_fail if needs_setup?
       run_application
     end
 
@@ -33,16 +33,12 @@ module Rubiclifier
     def not_setup
     end
 
-    def is_background_service?
-      raise NotImplementedError
-    end
-
-    def sends_notifications?
-      raise NotImplementedError
+    def features
+      []
     end
 
     def settings
-      raise NotImplementedError
+      []
     end
 
     def executable_name
@@ -50,7 +46,7 @@ module Rubiclifier
     end
 
     def data_directory
-      raise NotImplementedError
+      raise NotImplementedError if feature_enabled?(Feature::DATABASE)
     end
 
     def migrations_location
@@ -61,14 +57,47 @@ module Rubiclifier
       []
     end
 
+    private
+
+    def all_brew_dependencies
+      @abd ||= [
+        ("sqlite" if feature_enabled?(Feature::DATABASE)),
+        ("terminal-notifier" if feature_enabled?(Feature::NOTIFICATIONS))
+      ].concat(brew_dependencies).compact
+    end
+
+    def brew_dependencies_installed?
+      all_brew_dependencies.all? do |dep|
+        system("brew list #{dep} &> /dev/null")
+      end
+    end
+
+    def brew_installed_or_fail
+      unless system("which brew &> /dev/null")
+        puts
+        puts("You must install Homebrew in order to install these dependencies: #{all_brew_dependencies.join(", ")}".red)
+        puts("Go to https://brew.sh/")
+        exit
+      end
+    end
+
+    def all_features
+      [
+        (Feature::DATABASE if !settings.empty?)
+      ].concat(features).compact.uniq
+    end
+
+    def needs_setup?
+      !all_brew_dependencies.empty? || !settings.empty? || feature_enabled?(Feature::BACKGROUND)
+    end
+
     def setup_or_fail
       if args.command == "setup" || args.boolean("setup", "s")
-        puts("Installing brew dependencies...")
-        all_brew_dependencies = [
-          "sqlite",
-          ("terminal-notifier" if sends_notifications?)
-        ].concat(brew_dependencies).compact
-        system("brew install #{all_brew_dependencies.join(" ")}")
+        unless all_brew_dependencies.empty?
+          brew_installed_or_fail
+          puts("Installing brew dependencies...")
+          system("brew install #{all_brew_dependencies.join(" ")}")
+        end
 
         puts
 
@@ -80,26 +109,24 @@ module Rubiclifier
 
         puts
 
-        if is_background_service?
+        if feature_enabled?(Feature::BACKGROUND)
           setup_as_background_service
         else
-          puts("Finished setup! Run with `#{executable_name}`".green)
+          puts("Finished setup! Run with `".green + "#{executable_name}" + "`".green)
         end
         exit
-      end
-
-      unless settings.all?(&:is_setup?)
+      elsif !settings.all?(&:is_setup?) || !brew_dependencies_installed?
         not_setup
         puts
-        puts("Oops! You must finish setup first by running with the `--setup` option.".red)
-        puts("  `#{executable_name} --setup`".red)
+        puts("Oops! You must finish setup first.".red)
+        puts("  `".red + "#{executable_name} --setup" + "`".red)
         exit
       end
     end
 
     def setup_as_background_service
-      puts("It's recommended that you set this up as a system service with serviceman. You can check it out here: https://git.rootprojects.org/root/serviceman".blue)
-      puts("Set #{executable_name} to run on startup with `serviceman add --name #{executable_name} #{executable_name}`".blue)
+      puts("It's recommended that you set this up as a system service with serviceman. You can check it out here: https://git.rootprojects.org/root/serviceman".yellow)
+      puts("Set #{executable_name} to run on startup with `".yellow + "serviceman add --name #{executable_name} #{executable_name}" + "`".yellow)
       puts
       print("Would you like this script to set it up for you? (y/n) ")
       if STDIN.gets.chomp.downcase == "y"
@@ -113,6 +140,10 @@ module Rubiclifier
         puts
         puts("Finished setup!".green)
       end
+    end
+
+    def feature_enabled?(feature)
+      all_features.include?(feature)
     end
   end
 end

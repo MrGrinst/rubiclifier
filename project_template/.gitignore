@@ -1,0 +1,4 @@
+.byebug_history
+Gemfile.lock
+Brewfile.lock.json
+*.gem

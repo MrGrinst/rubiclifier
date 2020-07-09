@@ -12,14 +12,19 @@ module Rubiclifier
     end
 
     def populate
-      print("What's the #{label}? #{explanation_text}")
-      input = if is_secret
-                STDIN.noecho(&:gets).chomp.tap { puts }
-              else
-                STDIN.gets.chomp
-              end
-      if input == ""
-        input = nil
+      input = nil
+      loop do
+        print("What's the #{label}? #{explanation_text}".blue)
+        input = if is_secret
+                  STDIN.noecho(&:gets).chomp.tap { puts }
+                else
+                  STDIN.gets.chomp
+                end
+        if input == ""
+          input = nil
+          puts("This value can't be empty.".red) unless nullable
+        end
+        break if input || nullable
       end
       DB.save_setting(key, input, is_secret: is_secret) unless input.nil?
     end

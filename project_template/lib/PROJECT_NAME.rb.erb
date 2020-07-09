@@ -1,0 +1,59 @@
+require "rubiclifier"
+
+class <%= project_name_camel_case %> < Rubiclifier::BaseApplication
+  def show_help
+    puts
+    puts("DESCRIPTION")
+    puts
+    puts("Usage:")
+    puts("  <%= project_name %> --help                      | Shows this help menu")
+    <%- if needs_setup? -%>
+    puts("  <%= project_name -%> --setup                     | Runs setup")
+    <%- end -%>
+    puts("  <%= project_name %> command --option <argument> | Executes command")
+    puts
+    exit
+  end
+
+  def run_application
+    while true
+      puts "Running!"
+      sleep 5
+    end
+  end
+  <%- if !features.empty? -%>
+
+  def features
+    [<%= features.map { |f| "Rubiclifier::Feature::#{f}" }.join(", ") %>]
+  end
+  <%- end -%>
+  <%- if include_settings? -%>
+
+  def settings
+    @settings ||= [
+      Rubiclifier::Setting.new("username", "username", explanation: ->{"find it at this url"}, nullable: true),
+      Rubiclifier::Setting.new("password", "password", explanation: "input hidden", is_secret: true)
+    ]
+  end
+  <%- end -%>
+
+  def executable_name
+    "<%= project_name %>"
+  end
+  <%- if feature_enabled?(Rubiclifier::Feature::DATABASE) -%>
+
+  def data_directory
+    "~/.<%= project_name %>"
+  end
+
+  def migrations_location
+    "#{File.expand_path(File.dirname(__FILE__) + "/..")}/migrations.rb"
+  end
+  <%- end -%>
+  <%- if uses_brew? -%>
+
+  def brew_dependencies
+    <%= brew_dependencies.inspect %>
+  end
+  <%- end -%>
+end
