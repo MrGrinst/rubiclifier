@@ -36,12 +36,6 @@ class <%= project_name_camel_case %> < Rubiclifier::BaseApplication
     ]
   end
   <%- end -%>
-  <%- if needs_setup? -%>
-
-  def executable_name
-    "<%= project_name %>"
-  end
-  <%- end -%>
   <%- if feature_enabled?(Rubiclifier::Feature::DATABASE) -%>
 
   def data_directory

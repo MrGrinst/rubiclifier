@@ -1,4 +1,4 @@
-require "rubiclifier"
+require_relative "../rubiclifier.rb"
 
 class TemplateHydrator
   attr_reader :args, :project_name
@@ -33,6 +33,7 @@ class TemplateHydrator
     @features ||= [
       (Rubiclifier::Feature::BACKGROUND if args.boolean("background")),
       (Rubiclifier::Feature::DATABASE if (args.boolean("database") || include_settings?)),
+      (Rubiclifier::Feature::IDLE_DETECTION if args.boolean("idle-detection")),
       (Rubiclifier::Feature::NOTIFICATIONS if args.boolean("notifications")),
     ].compact
   end

@@ -5,11 +5,12 @@ require_relative "./setting.rb"
 
 module Rubiclifier
   class BaseApplication
-    attr_reader :args
-    private :args
+    attr_reader :args, :executable_name
+    private :args, :executable_name
 
-    def initialize(args)
+    def initialize(args, executable_name)
       @args = Args.new(args)
+      @executable_name = executable_name
       Feature.set_enabled(all_features)
       DB.hydrate(data_directory, migrations_location) if Feature.enabled?(Feature::DATABASE)
     end
@@ -40,10 +41,6 @@ module Rubiclifier
 
     def settings
       []
-    end
-
-    def executable_name
-      raise NotImplementedError
     end
 
     def data_directory

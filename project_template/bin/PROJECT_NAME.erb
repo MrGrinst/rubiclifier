@@ -2,4 +2,4 @@
 
 require_relative "../lib/<%= project_name %>.rb"
 
-<%= project_name_camel_case %>.new(ARGV).call
+<%= project_name_camel_case %>.new(ARGV, __FILE__.split("/").last).call

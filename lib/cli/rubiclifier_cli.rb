@@ -1,4 +1,4 @@
-require "rubiclifier"
+require_relative "../rubiclifier.rb"
 
 class RubiclifierCli < Rubiclifier::BaseApplication
   attr_reader :project_name
@@ -14,6 +14,7 @@ class RubiclifierCli < Rubiclifier::BaseApplication
     puts("                   --background                   |   Generate with background service setup steps")
     puts("                   --database                     |   Generate with a persistent database")
     puts('                   --homebrew "[first [second]]"  |   Require specific homebrew kegs')
+    puts("                   --idle-detection               |   Generate with ability to detect if user is idle")
     puts("                   --notifications                |   Generate with notification functionality")
     puts("                   --settings                     |   Generate with persistent setting functionality")
     puts

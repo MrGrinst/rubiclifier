@@ -2,4 +2,4 @@
 
 require_relative "../lib/cli/rubiclifier_cli.rb"
 
-RubiclifierCli.new(ARGV).call
+RubiclifierCli.new(ARGV, __FILE__.split("/").last).call
