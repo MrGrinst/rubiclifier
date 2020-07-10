@@ -67,7 +67,7 @@ module Rubiclifier
 
     def brew_dependencies_installed?
       all_brew_dependencies.all? do |dep|
-        system("brew list #{dep} &> /dev/null")
+        system("/usr/local/bin/brew list #{dep} &> /dev/null")
       end
     end
 
