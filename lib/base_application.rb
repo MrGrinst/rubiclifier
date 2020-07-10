@@ -10,7 +10,8 @@ module Rubiclifier
 
     def initialize(args)
       @args = Args.new(args)
-      DB.hydrate(data_directory, migrations_location) if feature_enabled?(Feature::DATABASE)
+      Feature.set_enabled(all_features)
+      DB.hydrate(data_directory, migrations_location) if Feature.enabled?(Feature::DATABASE)
     end
 
     def call
@@ -46,7 +47,7 @@ module Rubiclifier
     end
 
     def data_directory
-      raise NotImplementedError if feature_enabled?(Feature::DATABASE)
+      raise NotImplementedError if Feature.enabled?(Feature::DATABASE)
     end
 
     def migrations_location
@@ -61,8 +62,9 @@ module Rubiclifier
 
     def all_brew_dependencies
       @abd ||= [
-        ("sqlite" if feature_enabled?(Feature::DATABASE)),
-        ("terminal-notifier" if feature_enabled?(Feature::NOTIFICATIONS))
+        ("sqlite" if Feature.enabled?(Feature::DATABASE)),
+        ("terminal-notifier" if Feature.enabled?(Feature::NOTIFICATIONS)),
+        ("sleepwatcher" if Feature.enabled?(Feature::IDLE_DETECTION))
       ].concat(brew_dependencies).compact
     end
 
@@ -88,7 +90,7 @@ module Rubiclifier
     end
 
     def needs_setup?
-      !all_brew_dependencies.empty? || !settings.empty? || feature_enabled?(Feature::BACKGROUND)
+      !all_brew_dependencies.empty? || !settings.empty? || Feature.enabled?(Feature::BACKGROUND)
     end
 
     def setup_or_fail
@@ -109,7 +111,7 @@ module Rubiclifier
 
         puts
 
-        if feature_enabled?(Feature::BACKGROUND)
+        if Feature.enabled?(Feature::BACKGROUND)
           setup_as_background_service
         else
           puts("Finished setup! Run with `".green + "#{executable_name}" + "`".green)
@@ -140,10 +142,6 @@ module Rubiclifier
         puts
         puts("Finished setup!".green)
       end
-    end
-
-    def feature_enabled?(feature)
-      all_features.include?(feature)
     end
   end
 end

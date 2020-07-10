@@ -12,6 +12,7 @@ module Rubiclifier
     end
 
     def self.conn
+      Feature.fail_unless_enabled(Feature::DATABASE)
       @conn
     end
 

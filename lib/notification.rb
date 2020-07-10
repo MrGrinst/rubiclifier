@@ -1,8 +1,12 @@
+require_relative "./feature.rb"
+
 module Rubiclifier
   class Notification
     attr_reader :title, :message, :subtitle, :icon, :url
     private :title, :message, :subtitle, :icon, :url
+
     def initialize(title, message, subtitle = nil, icon = nil, url = nil)
+      Feature.fail_unless_enabled(Feature::NOTIFICATIONS)
       @title = title
       @message = message
       @subtitle = subtitle
