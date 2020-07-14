@@ -18,15 +18,28 @@ module Rubiclifier
     def call
       show_help if args.command == "help" || args.boolean("help", "h")
       setup_or_fail if needs_setup?
-      run_application
+      if Feature.enabled?(Feature::SERVER)
+        run_server
+      else
+        run_application
+      end
     end
 
     def show_help
       raise NotImplementedError
     end
 
+    def run_server
+      raise NotImplementedError
+    end
+
     def run_application
       raise NotImplementedError
+    end
+
+    def run_server
+      server_class.hydrate
+      server_class.run!
     end
 
     def additional_setup

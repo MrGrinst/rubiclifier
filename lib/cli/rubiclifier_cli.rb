@@ -45,6 +45,10 @@ class RubiclifierCli < Rubiclifier::BaseApplication
     unless template_hydrator.feature_enabled?(Rubiclifier::Feature::DATABASE)
       system("rm #{project_name}/migrations.rb")
     end
+    unless template_hydrator.feature_enabled?(Rubiclifier::Feature::SERVER)
+      system("rm #{project_name}/lib/server.rb")
+      system("rm -rf #{project_name}/public")
+    end
     puts("Finished creating project #{project_name}! Build out the application in #{project_name}/lib/#{project_name}.rb".green)
   end
 

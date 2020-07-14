@@ -4,6 +4,7 @@ module Rubiclifier
     DATABASE = "DATABASE"
     NOTIFICATIONS = "NOTIFICATIONS"
     IDLE_DETECTION = "IDLE_DETECTION"
+    SERVER = "SERVER"
 
     def self.set_enabled(features)
       @enabled = features

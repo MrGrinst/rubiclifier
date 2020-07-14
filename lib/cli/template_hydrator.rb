@@ -35,6 +35,7 @@ class TemplateHydrator
       (Rubiclifier::Feature::DATABASE if (args.boolean("database") || include_settings?)),
       (Rubiclifier::Feature::IDLE_DETECTION if args.boolean("idle-detection")),
       (Rubiclifier::Feature::NOTIFICATIONS if args.boolean("notifications")),
+      (Rubiclifier::Feature::SERVER if args.boolean("server")),
     ].compact
   end
 

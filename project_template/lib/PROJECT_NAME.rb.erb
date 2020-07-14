@@ -1,4 +1,7 @@
 require "rubiclifier"
+<%- if feature_enabled?(Rubiclifier::Feature::SERVER) -%>
+require_relative "./server.rb"
+<%- end -%>
 
 class <%= project_name_camel_case %> < Rubiclifier::BaseApplication
   def show_help
@@ -15,12 +18,18 @@ class <%= project_name_camel_case %> < Rubiclifier::BaseApplication
     exit
   end
 
+  <%- if feature_enabled?(Rubiclifier::Feature::SERVER) -%>
+  def server_class
+    Server
+  end
+  <%- else -%>
   def run_application
     while true
       puts "Running!"
       sleep 5
     end
   end
+  <%- end -%>
   <%- if !features.empty? -%>
 
   def features
