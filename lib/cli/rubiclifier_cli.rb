@@ -16,6 +16,7 @@ class RubiclifierCli < Rubiclifier::BaseApplication
     puts('                   --homebrew "[first [second]]"  |   Require specific homebrew kegs')
     puts("                   --idle-detection               |   Generate with ability to detect if user is idle")
     puts("                   --notifications                |   Generate with notification functionality")
+    puts("                   --server                       |   Generate with server")
     puts("                   --settings                     |   Generate with persistent setting functionality")
     puts
     exit
