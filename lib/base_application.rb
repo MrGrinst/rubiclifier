@@ -45,6 +45,9 @@ module Rubiclifier
     def additional_setup
     end
 
+    def post_setup_message
+    end
+
     def not_setup
     end
 
@@ -125,6 +128,7 @@ module Rubiclifier
           setup_as_background_service
         else
           puts("Finished setup! Run with `".green + "#{executable_name}" + "`".green)
+          post_setup_message
         end
         exit
       elsif !settings.all?(&:is_setup?) || !brew_dependencies_installed?
@@ -142,15 +146,19 @@ module Rubiclifier
       puts
       print("Would you like this script to set it up for you? (y/n) ")
       if STDIN.gets.chomp.downcase == "y"
-        puts "Installing serviceman..."
-        system("curl -sL https://webinstall.dev/serviceman | bash")
+        unless system("ls \"$HOME/.local/bin/serviceman\" &> /dev/null")
+          puts "Installing serviceman..."
+          system("-sL https://webinstall.dev/serviceman | bash")
+        end
         puts "Adding #{executable_name} as a service..."
-        system("serviceman add --name #{executable_name} #{executable_name}")
+        system("$HOME/.local/bin/serviceman add --name #{executable_name} #{executable_name}")
         puts
         puts("Finished setup! The service is set to run in the background!".green)
+        post_setup_message
       else
         puts
         puts("Finished setup!".green)
+        post_setup_message
       end
     end
   end

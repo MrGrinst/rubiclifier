@@ -5,7 +5,7 @@ Gem::Specification.new do |s|
   s.summary     = "SUMMARY HERE"
   s.authors     = ["AUTHOR NAME"]
   s.email       = "AUTHOR EMAIL"
-  s.files       = Dir.glob("{lib}/**/*") + ["Gemfile"]
+  s.files       = Dir.glob("{lib<%= ",public" if feature_enabled?(Rubiclifier::Feature::SERVER) %>}/**/*") + ["Gemfile"]
   s.homepage    = "https://rubygems.org/gems/<%= project_name %>"
   s.metadata    = { "source_code_uri" => "https://github.com/PATH_TO_PROJECT" }
   s.require_path = "lib"
