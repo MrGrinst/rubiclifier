@@ -38,13 +38,14 @@ module Rubiclifier
 
     def self.save_setting(key, value, is_secret:)
       salt = "NULL"
-      if is_secret
+      output_value = "NULL"
+      if is_secret && value
         salt, encrypted = Cipher.encrypt(value)
         salt = "'#{salt}'"
-        value = encrypted
+        output_value = "'#{encrypted}'"
       end
       conn.execute("DELETE FROM settings WHERE key = '#{key}';")
-      conn.execute("INSERT INTO settings (key, value, salt) VALUES('#{key}', '#{value}', #{salt});")
+      conn.execute("INSERT INTO settings (key, value, salt) VALUES('#{key}', #{output_value}, #{salt});")
     end
 
     def self.migrate_if_needed(migrations_location)
