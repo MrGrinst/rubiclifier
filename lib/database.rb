@@ -43,6 +43,8 @@ module Rubiclifier
         salt, encrypted = Cipher.encrypt(value)
         salt = "'#{salt}'"
         output_value = "'#{encrypted}'"
+      elsif value
+        output_value = "'#{value}'"
       end
       conn.execute("DELETE FROM settings WHERE key = '#{key}';")
       conn.execute("INSERT INTO settings (key, value, salt) VALUES('#{key}', #{output_value}, #{salt});")
